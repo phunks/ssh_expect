@@ -1,0 +1,20 @@
+[[server]]
+host = "localhost"
+port = 2022
+user_id = "sshuser"
+user_pw = "6wXUMXbWtBCY9KN6N4jMig=="
+observe_target = ["/app", "/dev"]
+
+[[server]]
+host = "localhost"
+port = 2022
+user_id = "sshuser"
+user_pw = "6wXUMXbWtBCY9KN6N4jMig=="
+observe_target = ["/app", "/dev"]
+
+[[server]]
+host = "localhost"
+port = 2022
+user_id = "sshuser"
+user_pw = "6wXUMXbWtBCY9KN6N4jMig=="
+observe_target = ["/"]
