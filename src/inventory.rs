@@ -1,4 +1,3 @@
-
 use serde::{Deserialize, Serialize};
 use tabled::Tabled;
 
@@ -12,7 +11,13 @@ pub struct Server {
     pub port: u16,
     pub user_id: String,
     pub user_pw: String,
-    pub observe_target: Vec<String>,
+    pub target: Vec<Target>,
+}
+
+#[derive(Default, Debug, Clone, Deserialize, Serialize)]
+pub struct Target {
+    pub mount_point: String,
+    pub threshold: i8,
 }
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize)]
@@ -23,6 +28,7 @@ pub struct DiskStatus {
     pub free_space: String,
     pub used_percentage: String,
     pub mount_point: String,
+    pub target: Target,
 }
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize)]
@@ -38,52 +44,52 @@ pub struct MarkdownTable {
     pub total_space: String,
     pub used_space: String,
     pub free_space: String,
+    pub threshold: String,
     pub used_percentage: String,
     pub mount_point: String,
 }
 
-impl Inventory {
-    pub fn set_server_info(&mut self, server: Server) {
-        self.server.append(&mut vec![server]);
+
+impl ResultStatus {
+    pub fn from(self) -> Vec<MarkdownTable> {
+        let Self { host, disk_status } = self;
+        disk_status
+            .into_iter()
+            .map(|x| MarkdownTable {
+                host: host.to_owned(),
+                file_system: x.file_system,
+                total_space: x.total_space,
+                used_space: x.used_space,
+                free_space: x.free_space,
+                threshold: format!("{} %", x.target.threshold),
+                used_percentage: icon_status(&x.used_percentage, x.target.threshold),
+                mount_point: x.mount_point,
+            })
+            .collect()
     }
 }
 
-impl ResultStatus {
-    pub fn from(&self) -> Vec<MarkdownTable> {
-        let host = &self.host.to_string();
-        self.disk_status
-            .iter()
-            .map(|x| MarkdownTable {
-                host: host.to_string(),
-                file_system: x.file_system.to_string(),
-                total_space: x.total_space.to_string(),
-                used_space: x.used_space.to_string(),
-                free_space: x.free_space.to_string(),
-                used_percentage: ResultStatus::icon_status(String::from(x.used_percentage.to_string())),
-                mount_point: x.mount_point.to_string(),
-            }).collect()
-    }
-
-    fn icon_status(val: String) -> String {
-        let i = val.trim().parse::<i32>();
-        match i {
-            Ok(j) => {
-                match j {
-                    i32::MIN..=79 => format!("✅  {} %", j),
-                    80..=i32::MAX => format!("⚠️  {} %", j),
-                }
+fn icon_status(val: &str, threshold: i8) -> String {
+    match val.trim().parse::<i8>() {
+        Ok(j) => {
+            if j < threshold {
+                format!("✅  {} %", j)
+            } else {
+                format!("⚠️  {} %", j)
             }
-            _ => val
-        }
+        },
+        _ => val.into(),
     }
 }
 
 #[test]
 fn test_icon_status() {
-    assert_eq!(ResultStatus::icon_status(String::from("0")),"✅  0 %");
-    assert_eq!(ResultStatus::icon_status(String::from("30")),"✅  30 %");
-    assert_eq!(ResultStatus::icon_status(String::from("80")),"⚠️  80 %");
-    assert_eq!(ResultStatus::icon_status(String::from("100")),"⚠️  100 %");
-    assert_eq!(ResultStatus::icon_status(String::from("n/a")),"n/a");
+    assert_eq!(icon_status("0", 80), "✅  0 %");
+    assert_eq!(icon_status("30", 80), "✅  30 %");
+    assert_eq!(icon_status("79", 80), "✅  79 %");
+    assert_eq!(icon_status("80", 80), "⚠️  80 %");
+    assert_eq!(icon_status("100", 80), "⚠️  100 %");
+    assert_eq!(icon_status("n/a", 80), "n/a");
+    assert_eq!(icon_status("60", 60), "⚠️  60 %");
+    assert_eq!(icon_status("0", 0), "⚠️  0 %");
 }
-

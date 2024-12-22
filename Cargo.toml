@@ -6,27 +6,18 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = { version = "1.0.76" }
-tokio = { version = "1.35.1", features = ["rt", "rt-multi-thread", "macros"] }
-async-ssh2-tokio = { version = "0.8.4" }
-serde = { version = "1.0.193", features = ["derive"] }
-toml = { version = "0.8.8", features = [] }
-magic-crypt = { version = "3.1.13" }
-clap = { version = "4.4.11", features = ["derive"] }
-base64 = { version = "0.21.5", features = [] }
-reqwest = { version = "0.11.23", default-features = false, features = ["trust-dns", "blocking", "json", "stream", "gzip", "rustls-tls-native-roots"] }
-futures = "0.3.29"
-regex = { version = "1.10.2" }
-serde_json = { version = "1.0.108" }
-tabled = { version = "0.15.0" }
-async-stream = "0.3.5"
-env_logger = { version = "0.10.1", features = [] }
-actix-web = { version = "4.4.0" }
-actix-web-lab = { version = "0.20.1" }
-actix-session = { version = "0.8.0", features = ["cookie-session"] }
-actix-files = { version = "0.6.2" }
-actix-rt = { version = "2.9.0" }
-serde_derive = "1.0.193"
-chrono = "0.4.31"
-cron = "0.12.0"
-once_cell = "1.19.0"
+anyhow = { version = "1.0" }
+tokio = { version = "1.42", features = ["rt", "rt-multi-thread", "macros"] }
+async-ssh2-tokio = { version = "0.8" }
+bpaf = { version = "0.9",features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
+toml = { version = "0.8", features = [] }
+magic-crypt = { version = "4.0" }
+base64 = { version = "0.22", features = [] }
+reqwest = { version = "0.12", default-features = false, features = ["trust-dns", "blocking", "json", "stream", "gzip", "rustls-tls-native-roots"] }
+futures = "0.3"
+regex = { version = "1.11" }
+serde_json = { version = "1.0" }
+tabled = { version = "0.17" }
+async-stream = "0.3"
+serde_derive = "1.0"

@@ -1,0 +1,50 @@
+[[server]]
+host = "127.0.0.1"
+port = 2200
+user_id = "user"
+user_pw = "BM1zpf2j/65oZttNjSkX4ejtwIEpJ2/ZGQ+Nz4llUB4="
+[[server.target]]
+mount_point = "/dev/shm"
+threshold = 60
+[[server.target]]
+mount_point = "/dev"
+threshold = 80
+[[server.target]]
+mount_point = "/ccc"
+threshold = 80
+
+[[server]]
+host = "localhost"
+port = 2200
+user_id = "user"
+user_pw = "MLN7zUo3CymzYRfl/aXICkDqXaTsQ26qdcd5X55CXak="
+[[server.target]]
+mount_point = "/etc/hosts"
+threshold = 80
+[[server.target]]
+mount_point = "/sys/firmware"
+threshold = 80
+
+[[server]]
+host = "localhosta"
+port = 2200
+user_id = "user"
+user_pw = "BM1zpf2j/65oZttNjSkX4ejtwIEpJ2/ZGQ+Nz4llUB4="
+[[server.target]]
+mount_point = "/"
+threshold = 80
+
+[[server]]
+host = "::1"
+port = 2200
+user_id = "user"
+user_pw = "MLN7zUo3CymzYRfl/aXICkDqXaTsQ26qdcd5X55CXak="
+[[server.target]]
+mount_point = "/dev/shm"
+threshold = 0
+[[server.target]]
+mount_point = "/dev"
+threshold = 80
+[[server.target]]
+mount_point = "/ccc"
+threshold = 80
