@@ -1,5 +1,5 @@
 use bpaf::*;
-use std::fmt::{Debug, Display, Formatter, Pointer};
+use std::fmt::{Debug, Display, Formatter};
 use std::path::PathBuf;
 use std::process;
 use std::str::FromStr;

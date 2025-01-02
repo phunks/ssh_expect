@@ -1,5 +1,4 @@
 
-use std::fmt::Display;
 use std::sync::Arc;
 use crate::config::read_config;
 use crate::crypt::decrypt;
@@ -14,7 +13,7 @@ use tabled::Table;
 use std::sync::Mutex;
 use crate::args::TomlPath;
 
-pub async fn do_ssh(toml: TomlPath) -> Result<String> {
+pub async fn do_ssh(toml: TomlPath) -> Result<(String, u8)> {
     let mut inventory = read_config(&toml.to_string()).unwrap();
     let ssh_err = CollectError::default();
     let result_status = join_all(&mut inventory.server.iter_mut().map(|i| async {
@@ -36,6 +35,7 @@ pub async fn do_ssh(toml: TomlPath) -> Result<String> {
     }))
     .await;
 
+    let mut rc = 0_u8;
     let v = result_status
         .into_iter()
         .flat_map(|i| i.from())
@@ -44,11 +44,12 @@ pub async fn do_ssh(toml: TomlPath) -> Result<String> {
         .with(Style::markdown())
         .with(Modify::new(ByColumnName::new("used_percentage")).with(Alignment::right()))
         .to_string();
+    if table.contains("⚠️") { rc = 1; }
     if ssh_err.len().ne(&0) {
-        table = format!("{}{}", table, ssh_err.write())
+        rc += 2;
+        table = format!("{}{}", table, ssh_err.write());
     };
-
-    Ok(table)
+    Ok((table, rc))
 }
 
 #[derive(Default, Clone)]
