@@ -1,8 +1,11 @@
+[webhook]
+url = "http://localhost:8065/hooks/xxxxxx"
+
 [[server]]
 host = "127.0.0.1"
 port = 2200
 user_id = "user"
-user_pw = "BM1zpf2j/65oZttNjSkX4ejtwIEpJ2/ZGQ+Nz4llUB4="
+user_pw = "75btrKfn5P4kJi8jFHwe/Xs+KDN8RlsG5j2mTPvGPYc="
 [[server.target]]
 mount_point = "/dev/shm"
 threshold = 60
@@ -17,7 +20,7 @@ threshold = 80
 host = "localhost"
 port = 2200
 user_id = "user"
-user_pw = "MLN7zUo3CymzYRfl/aXICkDqXaTsQ26qdcd5X55CXak="
+user_pw = "75btrKfn5P4kJi8jFHwe/Xs+KDN8RlsG5j2mTPvGPYc="
 [[server.target]]
 mount_point = "/etc/hosts"
 threshold = 80
@@ -29,7 +32,7 @@ threshold = 80
 host = "localhosta"
 port = 2200
 user_id = "user"
-user_pw = "BM1zpf2j/65oZttNjSkX4ejtwIEpJ2/ZGQ+Nz4llUB4="
+user_pw = "75btrKfn5P4kJi8jFHwe/Xs+KDN8RlsG5j2mTPvGPYc="
 [[server.target]]
 mount_point = "/"
 threshold = 80
@@ -38,7 +41,7 @@ threshold = 80
 host = "::1"
 port = 2200
 user_id = "user"
-user_pw = "MLN7zUo3CymzYRfl/aXICkDqXaTsQ26qdcd5X55CXak="
+user_pw = "75btrKfn5P4kJi8jFHwe/Xs+KDN8RlsG5j2mTPvGPYc="
 [[server.target]]
 mount_point = "/dev/shm"
 threshold = 0

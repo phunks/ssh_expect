@@ -1,9 +1,11 @@
 use serde::{Deserialize, Serialize};
 use tabled::Tabled;
+use better_default::Default;
 
 #[derive(Default, Debug, Deserialize, Serialize)]
 pub struct Inventory {
     pub server: Vec<Server>,
+    pub webhook: WebHook,
 }
 #[derive(Default, Debug, Clone, Deserialize, Serialize)]
 pub struct Server {
@@ -22,14 +24,21 @@ pub struct Target {
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize)]
 pub struct DiskStatus {
+    #[default("n/a".into())]
     pub file_system: String,
+    #[default("n/a".into())]
     pub total_space: String,
+    #[default("n/a".into())]
     pub used_space: String,
+    #[default("n/a".into())]
     pub free_space: String,
+    #[default("n/a".into())]
     pub used_percentage: String,
+    #[default("n/a".into())]
     pub mount_point: String,
     pub target: Target,
 }
+
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize)]
 pub struct ResultStatus {
@@ -37,15 +46,26 @@ pub struct ResultStatus {
     pub disk_status: Vec<DiskStatus>,
 }
 
+#[derive(Default, Debug, Clone, Deserialize, Serialize)]
+pub struct WebHook {
+    pub url: String,
+}
+
 #[derive(Default, Debug, Clone, Tabled, Deserialize, Serialize)]
 pub struct MarkdownTable {
     pub host: String,
+    #[tabled(rename = "file system")]
     pub file_system: String,
+    #[tabled(rename = "total space (MB)")]
     pub total_space: String,
+    #[tabled(rename = "used space (MB)")]
     pub used_space: String,
+    #[tabled(rename = "free space (MB)")]
     pub free_space: String,
     pub threshold: String,
+    #[tabled(rename = "used percentage")]
     pub used_percentage: String,
+    #[tabled(rename = "mount point")]
     pub mount_point: String,
 }
 

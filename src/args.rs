@@ -64,7 +64,7 @@ impl Options {
             process::exit(-1);
         };
 
-        return match arg.file {
+        match arg.file {
             None => {
                 match TomlPath::from_str(default_toml) {
                     Ok(path) => {path}

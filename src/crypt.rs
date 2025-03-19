@@ -14,7 +14,7 @@ pub fn decrypt(base64: &str) -> String {
 
 #[test]
 fn test_encrypt_decrypt() {
-    let passwd = "xt71FxyaqsnFcFYXgplS";
+    let passwd = "bXh0OLdbOStOPQJB4yfK";
     let base64 = MC.encrypt_str_to_base64(passwd);
 
     println!(
