@@ -6,6 +6,7 @@ use anyhow::Result;
 use async_ssh2_tokio::client::{AuthMethod, Client, ServerCheckMethod};
 use futures::future::join_all;
 use regex::Regex;
+use std::sync::LazyLock;
 use tabled::settings::location::ByColumnName;
 use tabled::settings::{Alignment, Modify, Span, Style};
 use tabled::Table;
@@ -70,6 +71,7 @@ impl CollectError {
     }
 }
 
+static RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"([ \t:]+)").unwrap());
 async fn ssh_expect(server: &mut Server, mut ssh_err: CollectError) -> Result<ResultStatus, > {
     let auth_method = AuthMethod::with_password(&decrypt(&server.user_pw));
 
@@ -106,12 +108,11 @@ async fn ssh_expect(server: &mut Server, mut ssh_err: CollectError) -> Result<Re
     stderr.into_iter().filter(|&x|!x.is_empty())
         .for_each( |x| { ssh_err.push(&format!("{}: {}", server.host, x))});
 
-    let re = Regex::new(r"([ \t:]+)").expect("Invalid regex");
     let mut r = ResultStatus::default();
 
     #[allow(clippy::needless_range_loop)]
     for i in 1..stdout.len() - 1 {
-        let el: Vec<&str> = re.split(stdout[i]).collect();
+        let el: Vec<&str> = RE.split(stdout[i]).collect();
 
         r.host = server.host.to_string();
         r.disk_status.append(&mut vec![DiskStatus {

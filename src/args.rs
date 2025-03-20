@@ -1,25 +1,35 @@
 use bpaf::*;
 use std::fmt::{Debug, Display, Formatter};
 use std::path::PathBuf;
-use std::process;
+use std::{process};
 use std::str::FromStr;
 use crate::crypt::encrypt;
 
-#[derive(Debug, Clone, Bpaf)]
+#[derive(Debug, Bpaf)]
 #[bpaf(options)]
 pub struct Options {
-    #[bpaf(short, long, argument("ssh passwd"))]
+    /// Activate debug mode
+    #[bpaf(short, long)]
+    debug: bool,
+    /// Allow insecure server connect
+    #[bpaf(short('k'), long)]
+    insecure: bool,
     /// magic crypt
+    #[bpaf(short, long, argument("ssh passwd"))]
     pub encrypt: Option<String>,
-    #[bpaf(short, long, argument("file"))]
     /// toml file
+    #[bpaf(short, long, argument("file"))]
     pub file: Option<PathBuf>,
 }
 
-#[derive(Debug)]
-pub struct TomlPath(PathBuf);
+#[derive(Debug, Default)]
+pub struct Opts{
+    toml: PathBuf,
+    pub debug: bool,
+    pub insecure: bool,
+}
 
-impl FromStr for TomlPath {
+impl FromStr for Opts {
     type Err = TomlPathError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -27,7 +37,10 @@ impl FromStr for TomlPath {
         if !path.exists() {
             return Err(TomlPathError::IOError);
         }
-        Ok(TomlPath(path))
+        Ok(Opts{
+            toml: path,
+            ..Default::default()
+        })
     }
 }
 
@@ -36,18 +49,28 @@ pub enum TomlPathError {
     IOError
 }
 
-impl Display for TomlPath {
+impl Display for Opts {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0.as_os_str().to_str().unwrap())
+        write!(f, "{}", self.toml.as_os_str().to_str().unwrap())
     }
 }
 
 impl Options {
-    pub fn init() -> TomlPath {
+    pub fn init() -> Opts {
         let default_toml = "target.toml";
         let help = options().run_inner(&["--help"])
             .unwrap_err()
             .unwrap_stdout();
+
+        let ret = |a: &str | {
+            println!("file not found: {}", a);
+            println!("{}", help);
+            process::exit(-1);
+        };
+
+        if !PathBuf::from(default_toml).exists() {
+            ret(default_toml)
+        }
 
         let arg = options().run();
         match arg.encrypt {
@@ -58,25 +81,21 @@ impl Options {
             }
         }
 
-        let ret = |a: &str | {
-            println!("file not found {}", a);
-            println!("{}", help);
-            process::exit(-1);
-        };
-
-        match arg.file {
+        let toml = match arg.file {
             None => {
-                match TomlPath::from_str(default_toml) {
-                    Ok(path) => {path}
-                    Err(_e) => ret(default_toml),
-                }
+                PathBuf::from(default_toml)
             },
-            Some(a) => {
-                if !a.exists() {
-                    ret(a.as_os_str().to_str().unwrap());
+            Some(toml) => {
+                if !toml.exists() {
+                    ret(toml.to_str().unwrap());
                 };
-                TomlPath(a)
+                toml
             }
+        };
+        Opts{
+            toml,
+            debug: arg.debug,
+            insecure: arg.insecure,
         }
     }
 }
