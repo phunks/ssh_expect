@@ -8,22 +8,33 @@ mod args;
 use std::fmt;
 use std::process::ExitCode;
 use serde_derive::{Deserialize, Serialize};
+use strum::EnumMessage;
 use crate::args::Options;
 use crate::config::read_config;
 use crate::request::post_request;
 use crate::ssh::do_ssh;
 
-#[derive(Debug)]
+
+const EXT_NORMAL_MESSAGES: &str = "aあああああ";
+#[derive(Debug, EnumMessage)]
 pub enum Rc {
+    /// aaaa [`EXT_NORMAL_MESSAGES`].
     Normal,
+    /// warn bbb
     Warn,
+    #[doc = "Returns a new ああああ `"]
     Error,
 }
 
 #[tokio::main]
 async fn main() -> ExitCode {
-    let toml = Options::init();
-    let mut inventory = read_config(&toml.to_string()).unwrap();
+    let opts = Options::init();
+    let mut inventory = match read_config(&opts.to_string()) {
+        Ok(toml) => {toml}
+        Err(e) => {
+            panic!("toml error: {}", e)
+        }
+    };
 
     let a = do_ssh(&mut inventory)
         .await
@@ -31,11 +42,16 @@ async fn main() -> ExitCode {
 
     let url = inventory.webhook.url;
 
+    if opts.debug {
+        println!("{}\n\n{}", a.1.get_documentation().unwrap(), a.0);
+    }
     match a.1 {
         Rc::Warn | Rc::Error => {
-            post_request(&url, &OutgoingWebhook {
-                text: format!("{}\n\n{}", a.1, a.0)
-            }).await.expect("error: webhook");
+            if !opts.debug {
+                post_request(&url, &OutgoingWebhook {
+                    text: format!("{}\n\n{}", a.1, a.0)
+                }, opts.insecure).await.expect("error: webhook");
+            }
         },
         _ => {}, //normal end
     }
